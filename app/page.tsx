@@ -2,6 +2,7 @@
 import React, { useState, useTransition } from "react";
 import { Moon, Sun } from "lucide-react";
 import axios from "axios";
+import { Http2ServerRequest } from "http2";
 
 // Define TypeScript types for messages and responses
 interface Message {
@@ -19,6 +20,7 @@ interface ChatResponse {
 // Server Action function: typed to ensure return types are safe
 async function handleChatbotResponse(message: string): Promise<ChatResponse> {
   const apiKey = 'xai-vOJkcvQWsTAXcLblqcSsSZs2TE0YIMwchX7rCer3hrwDN8O5UVkW45VOwgkQO59eLX6c04PVS74F7xzU'; // Replace with your xAI API key
+  //const apiKey = import.meta.env.'xai-vOJkcvQWsTAXcLblqcSsSZs2TE0YIMwchX7rCer3hrwDN8O5UVkW45VOwgkQO59eLX6c04PVS74F7xzU'; // Replace with your xAI API key
 
   try {
     const response = await axios.post(
@@ -33,8 +35,8 @@ async function handleChatbotResponse(message: string): Promise<ChatResponse> {
           Authorization: `Bearer ${apiKey}`,
         },
       }
+      
     );
-
     const { data } = response;
     const botText = data.choices[0]?.message?.content;
     const isImageRequest =
@@ -42,7 +44,7 @@ async function handleChatbotResponse(message: string): Promise<ChatResponse> {
       message.toLowerCase().includes("picture");
     let botImage: string | null = null;
 
-    if (isImageRequest) {
+     if (isImageRequest) {
       const imageResponse = await axios.post(
         "https://api.x.ai/v2/chat/completions",
         {
@@ -54,8 +56,8 @@ async function handleChatbotResponse(message: string): Promise<ChatResponse> {
             "Content-Type": "application/json",
             Authorization: `Bearer ${apiKey}`,
           },
-        }
-      );
+        } 
+      ); 
       botImage = imageResponse.data.choices[0]?.message?.content || null;
     }
 
@@ -93,6 +95,7 @@ export default function ChatPage() {
         try {
           const response = await handleChatbotResponse(input);
           if (response.text) {
+            console.log(response.text)
             setMessages((prevMessages) => [
               ...prevMessages,
               { text: response.text, sender: "bot" },
@@ -121,7 +124,8 @@ export default function ChatPage() {
         try {
           const response = await handleChatbotResponse(`Conjugate the verb "${selectedVerb}" in ${selectedTense} tense.`);
           if (response.text) {
-            const conjugations = response.text.split("\n").slice(0, 7).join("\n");
+            console.log("from conjugate submit button: " + response.text)
+            const conjugations = response.text.split("\n").slice(0, 8).join("\n");
             setMessages((prevMessages) => [
               ...prevMessages,
               { text: conjugations, sender: "bot" },
@@ -142,8 +146,8 @@ export default function ChatPage() {
     <div className="flex flex-col h-screen transition-colors duration-300 bg-white text-gray-800">
       <header className="flex justify-between items-center p-4 shadow-md">
         <div className="text-lg font-medium">
-          <a href="https://twitter.com/raghu_rtr" className="hover:underline">
-            Created by https://twitter.com/raghu_rtr
+          <a href="https://saaswebsitecwm.netlify.app" className="hover:underline">
+            Created by https://twitter.com/cmiller4135
           </a>
         </div>
         <a
